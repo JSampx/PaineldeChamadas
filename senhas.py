@@ -1,17 +1,7 @@
 class SingletonMeta(type):
-    """
-    The Singleton class can be implemented in different ways in Python. Some
-    possible methods include: base class, decorator, metaclass. We will use the
-    metaclass because it is best suited for this purpose.
-    """
-
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        """
-        Possible changes to the value of the `__init__` argument do not affect
-        the returned instance.
-        """
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
@@ -22,59 +12,36 @@ class ChamaSenha(metaclass=SingletonMeta):
     contador: int = 0
     lista: list = []
 
-
-    def __init__(self):
-        pass
-
-    def incluiLista(self, Senha):
-        if Senha.__repr__() in self.lista:
-            print(f'A senha {Senha.__repr__()} já existe na lista')
-            self.lista.append(f'{str(Senha)[0]}{Senha.seq + 1}')
-            self.contador += 1
+    def incluiLista(self, senha):
+        if senha in self.lista:
+            print(f'A senha {senha} já existe na lista')
         else:
-            self.lista.append(Senha.__repr__())
+            self.lista.append(senha)
             self.contador += 1
         print(self.lista)
 
-tipos = []
-class Senha:
-    tipo: str
-    seq: int = 0
-    def __init__(self, tipo: str):
-        senha = TipoSenha(tipo)
-        self.tipo = senha
-        self.seq += senha.seq
-
-    def __repr__(self):
-        return f'{self.tipo}{self.seq}'
-
 
 class TipoSenha:
-    tipo: str
-    seq: int = 0
+    _tipos = {}
+
     def __init__(self, tipo: str):
-        self.tipo = tipo[0]
-        if tipo in tipos:
-            print(f'Tipo {tipo} já inserida')
-            self.incrementaSeqSenha()
+        self.tipo = tipo
+        if tipo not in TipoSenha._tipos:
+            TipoSenha._tipos[tipo] = 1
         else:
-            self.adicionaLista(tipo)
-            self.incrementaSeqSenha()
+            print(f'Tipo {tipo} já inserido.')
 
-    def __repr__(self):
-        return self.tipo
-
-    def adicionaLista(self, valor):
-        tipos.append(valor)
-
-    def incrementaSeqSenha(self):
-        self.seq += 1
-        return self.seq
-
-
+    @classmethod
+    def geraSenha(cls, tipo: str):
+        if tipo not in cls._tipos:
+            cls._tipos[tipo] = 1
+        else:
+            cls._tipos[tipo] += 1
+        return f'{tipo}{cls._tipos[tipo]}'
 
 chama_senha = ChamaSenha()
-chama_senha.incluiLista(Senha("A"))
-chama_senha.incluiLista(Senha("B"))
-chama_senha.incluiLista(Senha("C"))
-chama_senha.incluiLista(Senha("C"))
+chama_senha.incluiLista(TipoSenha.geraSenha("A"))
+chama_senha.incluiLista(TipoSenha.geraSenha("B"))
+chama_senha.incluiLista(TipoSenha.geraSenha("C"))
+chama_senha.incluiLista(TipoSenha.geraSenha("C"))
+chama_senha.incluiLista(TipoSenha.geraSenha("C"))
